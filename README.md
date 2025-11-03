@@ -770,8 +770,6 @@ pyinstaller VideoConference_Server.spec
 ### Developer Team
 **Gyan Chandra**  
 **Rohit Kumar**
-[GitHub](https://github.com/gyanchandra2910)
-
 </div>
 
 ### How to Contribute
