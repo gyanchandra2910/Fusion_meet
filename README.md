@@ -1,437 +1,653 @@
-# 🎯 FusionMeet - LAN-Based Video Conferencing System# G-Meet Clone
+# 🚀 FusionMeet - LAN-Based All-in-One Collaboration Suite
 
+<div align="center">
 
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![PyQt5](https://img.shields.io/badge/PyQt5-GUI-41CD52?style=for-the-badge&logo=qt&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-Video-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-<div align="center">This project is a LAN-based multi-user communication system developed in Python, mimicking some of the core functionalities of Google Meet. It uses a client-server architecture and socket programming to enable real-time video/audio conferencing, screen sharing, group chat, and file sharing among multiple users on the same local network.
+**A powerful, standalone multi-user communication platform designed exclusively for Local Area Networks**
 
+[Features](#-core-features) • [Installation](#-installation--setup) • [Usage](#-usage-instructions) • [Architecture](#-system-architecture) • [Documentation](#-documentation)
 
-
-![FusionMeet](https://img.shields.io/badge/FusionMeet-LAN%20Conferencing-blue?style=for-the-badge)## Features
-
-[![Python](https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge&logo=python)](https://www.python.org/)
-
-[![PyQt5](https://img.shields.io/badge/PyQt5-GUI-orange?style=for-the-badge)](https://riverbankcomputing.com/software/pyqt/)- **Multi-User Video Conferencing**: Real-time video streaming from all clients, displayed in a dynamic grid.
-
-- **Multi-User Audio Conferencing**: Real-time audio streaming and playback.
-
-**A robust, standalone communication platform for Local Area Networks**- **Screen Sharing**: A designated "presenter" can share their screen with all other participants.
-
-- **Group Text Chat**: A chronological group chat for all participants.
-
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Architecture](#-system-architecture) • [Documentation](#-documentation)- **File Sharing**: Share files with all participants in the session. Files are listed in the shared files panel, making it easy for any participant to download them.
-
-- **Integrated File Panel**: View and download shared files directly in the main interface.
-
-</div>- **Modular Design**: Each major functionality (video, audio, chat, etc.) is handled in a separate module for clarity and extensibility.
-
-
-
----## Architecture
-
-
-
-## 📋 Table of ContentsThe system is built on a client-server model:
-
-
-
-- [Overview](#-overview)- **Server (`server.py`)**: A central, multi-threaded server that manages all client connections and routes data between them. It uses separate threads for handling each client's TCP connection and a main thread for UDP traffic.
-
-- [Features](#-features)- **Client (`client.py`)**: A GUI application (built with PyQt5) that provides the user interface for all functionalities. It uses multiple threads to handle sending and receiving data for different modules concurrently.
-
-- [System Requirements](#-system-requirements)
-
-- [Installation](#-installation)### Communication Protocols
-
-- [Quick Start](#-quick-start)
-
-- [User Guide](#-user-guide)- **TCP**: Used for reliable, ordered data transfer, which is essential for:
-
-- [System Architecture](#-system-architecture)  - Session management (connections, disconnections)
-
-- [Technical Specifications](#-technical-specifications)  - Group chat messages
-
-- [Building Executables](#-building-executables)  - File sharing (both metadata and file content)
-
-- [Troubleshooting](#-troubleshooting)    - File metadata is sent to all clients when a new file is shared
-
-- [License](#-license)    - File content is sent in chunks only when a specific client requests it
-
-    - The server tracks available files for each session and sends this information to new clients
-
----  - Screen sharing frames (for reliability over speed)
-
-- **UDP**: Used for low-latency, real-time data, where speed is more critical than perfect reliability:
-
-## 🌟 Overview  - Video streams
-
-  - Audio streams
-
-**FusionMeet** is a comprehensive, server-based multi-user communication application designed to operate exclusively over Local Area Networks (LAN). Perfect for environments where internet access is unavailable, unreliable, or restricted, FusionMeet provides enterprise-grade collaboration tools without requiring external connectivity.
-
-### Threading Model
-
-### Why FusionMeet?
-
-Both the client and server are heavily multi-threaded to ensure non-blocking operations:
-
-✅ **100% LAN-Based** - No internet required  
-
-✅ **Complete Privacy** - Data never leaves your network  - **Server**:
-
-✅ **Low Latency** - Optimized for real-time communication    - Main thread: Listens for new TCP connections.
-
-✅ **Easy Setup** - Simple server-client architecture    - One thread per connected client to handle all incoming TCP data from that client.
-
-✅ **All-in-One** - Video, audio, chat, screen sharing, and file transfer    - One thread to listen for all incoming UDP data.
-
-- **Client**:
-
----  - Main thread: Runs the PyQt5 GUI application.
-
-  - One thread for receiving all TCP data from the server.
-
-## 🚀 Features  - One thread for receiving all UDP data from the server.
-
-  - Separate `QTimer` or thread-based mechanisms within each module (e.g., video, audio) for sending data at regular intervals.
-
-### 🎥 Multi-User Video Conferencing
-
-- **Real-time Video Streaming** - UDP protocol for low-latency transmission## Modules
-
-- **JPEG Compression** - Efficient bandwidth utilization
-
-- **Grid Layout** - Display multiple participants simultaneously- `config.py`: Contains all the configuration variables for the server and client.
-
-- **Configurable Quality** - 320x240 @ 15 FPS (adjustable)- `utils.py`: Provides helper functions for network communication, such as sending and receiving data with size prefixes.
-
-- `gui.py`: Defines the main window and all the UI components for the client application.
-
-### 🎤 Multi-User Audio Conferencing- `chat_module.py`: Handles the logic for sending and receiving chat messages.
-
-- **Crystal Clear Audio** - 22050 Hz, mono, 16-bit- `video_module.py`: Manages video capturing, encoding, sending, receiving, and decoding.
-
-- **N-1 Audio Mixing** - Server-side mixing prevents echo- `audio_module.py`: Manages audio recording, encoding, sending, receiving, and playback.
-
-- **Real-time Transmission** - UDP for minimal latency- `screen_sharing_module.py`: Handles screen capturing and transmission.
-
-- **Audio Level Indicators** - Visual feedback- `file_sharing_module.py`: Implements the file sending and receiving logic, with support for:
-
-.\.venv\Scripts\Activate.ps1
-
-# Run client
-python client.py
-```
-
-1. Enter server IP address
-2. Choose username
-3. Select/create session
-4. Click "Join Conference"
+</div>
 
 ---
 
-## 📖 User Guide
+## 📖 Overview
 
-### Main Interface
-```
-┌─────────────────────────────────────────────────────┐
-│  FusionMeet - Session: Team Meeting                │
-├───────────┬────────────────────┬────────────────────┤
-│  Video    │  Screen Share      │  Participants      │
-│  Grid     │  (when active)     │  • Alice (You)     │
-│           │                    │  • Bob             │
-│  ┌──┬──┐  │                    ├────────────────────┤
-│  │A │B │  │                    │  Shared Files      │
-│  ├──┼──┤  │                    │  📄 Report.pdf     │
-│  │C │D │  │                    │  📊 Slides.pptx    │
-│  └──┴──┘  │                    │                    │
-├───────────┴────────────────────┼────────────────────┤
-│  Chat                          │  Controls          │
-│  Alice: Hello!                 │  🎥 🎤 📺 📁 🚪   │
-│  [Type message...]    [Send]   │                    │
-└────────────────────────────────┴────────────────────┘
-```
+**FusionMeet** is a comprehensive LAN-based collaboration suite that brings enterprise-grade communication tools to your local network without requiring internet connectivity. Built entirely in Python using socket programming, it provides real-time video conferencing, crystal-clear audio, screen sharing, instant messaging, and seamless file sharing.
 
-### Controls
+### 🎯 Purpose
 
-**🎥 Video:** Toggle camera on/off  
-**🎤 Audio:** Toggle microphone mute  
-**📺 Screen Share:** Start/stop presenting  
-**📁 Files:** Upload/download files  
-**💬 Chat:** Send text messages  
-**🚪 Leave:** Disconnect from session  
+Perfect for:
+- 🏢 **Corporate environments** with restricted internet access
+- 🏫 **Educational institutions** conducting local workshops
+- 🏥 **Healthcare facilities** requiring private communication
+- 🏭 **Industrial setups** with isolated networks
+- 🔒 **Security-conscious organizations** prioritizing data privacy
+
+### ✨ Why FusionMeet?
+
+✅ **100% LAN-Based** - No internet dependency, works entirely offline  
+✅ **Complete Privacy** - Your data never leaves your local network  
+✅ **Low Latency** - Optimized for real-time communication  
+✅ **Easy Deployment** - Simple client-server architecture  
+✅ **Feature-Rich** - All essential collaboration tools in one place  
+✅ **Open Source** - Fully customizable and transparent  
+
+---
+
+## 🎯 Core Features
+
+### 🎥 Multi-User Video Conferencing
+- **Real-time video streaming** from all connected clients
+- **Dynamic grid layout** displaying up to 9 participants (3×3)
+- **JPEG compression** for efficient bandwidth utilization
+- **Configurable quality** - 320×240 resolution at 30 FPS (adjustable in `config.py`)
+- **Local preview** with selfie-mode mirroring
+- **Thread-safe rendering** using PyQt5 signals/slots
+
+### 🎤 Crystal-Clear Audio Conferencing
+- **High-quality audio** - 22050 Hz, 16-bit, mono
+- **N-1 Server-side mixing** - Prevents echo by mixing all audio except sender's
+- **Real-time transmission** via UDP for minimal latency
+- **Visual feedback** - Audio level indicators (planned)
+- **Mute/unmute** controls with instant feedback
+
+### 📺 Screen & Presentation Sharing
+- **Full screen capture** using MSS library
+- **Single presenter mode** - Server-enforced presenter lock
+- **Optimized compression** - JPEG at 70% quality, 2 FPS
+- **Low-latency delivery** - TCP for reliability
+- **Automatic conflict prevention** - Only one presenter at a time
+- **FPS counter** for performance monitoring
+
+### 💬 Group Text Chat
+- **Real-time messaging** via TCP for guaranteed delivery
+- **Persistent chat history** throughout the session
+- **Sender identification** - Clear username display
+- **Timestamp support** for message tracking
+- **Clean UI** - Integrated chat panel in main window
+
+### 📁 File Sharing & Transfer
+- **Secure file transfer** over TCP
+- **Progress tracking** - Real-time upload/download indicators
+- **Transfer speed monitoring** - MB/s display
+- **Multi-file support** - Share multiple files simultaneously
+- **Centralized storage** - Server manages shared files
+- **File listing** - View all available files in session
+- **Chunked transfer** - 32 KB chunks for reliable delivery
+- **Size limit** - Up to 500 MB per file (configurable)
 
 ---
 
 ## 🏗️ System Architecture
 
 ### Network Topology
+
 ```
-                ┌─────────────┐
-                │   Server    │
-                │ (192.168.x) │
-                └──────┬──────┘
-                       │
-       ┌───────────────┼───────────────┐
-       │               │               │
-  ┌────▼────┐     ┌────▼────┐    ┌────▼────┐
-  │ Client1 │     │ Client2 │    │ Client3 │
-  │ (Alice) │     │  (Bob)  │    │(Charlie)│
-  └─────────┘     └─────────┘    └─────────┘
+                    ┌─────────────────┐
+                    │  SERVER         │
+                    │  (Host Machine) │
+                    │                 │
+                    │  TCP: 65435     │
+                    │  UDP: 65436     │
+                    └────────┬────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+         ┌────▼────┐    ┌────▼────┐   ┌────▼────┐
+         │ Client1 │    │ Client2 │   │ Client3 │
+         │ (Alice) │    │  (Bob)  │   │(Charlie)│
+         └─────────┘    └─────────┘   └─────────┘
+              │              │              │
+              └──────────────┴──────────────┘
+                    Same LAN Network
 ```
+
+### Client-Server Model
+
+**Server Responsibilities:**
+- 🔌 Accepts TCP connections on port 65435
+- 📡 Routes UDP media packets on port 65436
+- 🎵 Performs N-1 audio mixing
+- 📂 Manages file inventory and transfers
+- 👥 Tracks active participants and sessions
+- 🔄 Broadcasts messages and status updates
+
+**Client Responsibilities:**
+- 🖥️ PyQt5-based graphical user interface
+- 📷 Captures audio, video, and screen content
+- 🗜️ Compresses and encodes media streams
+- 📤 Sends data to server via TCP/UDP
+- 📥 Receives and decodes remote media
+- 🎨 Renders video grid and UI components
 
 ### Communication Protocols
 
-**TCP (Port 5000):**
-- User authentication
-- Chat messages
-- File transfers
-- Control commands
+#### TCP (Port 65435) - Reliable Channel
+- ✅ User authentication and login
+- ✅ Session management
+- ✅ Chat messages
+- ✅ File metadata exchange
+- ✅ File content transfer
+- ✅ Control commands (video/audio status)
+- ✅ Participant list updates
 
-**UDP (Port 5001):**
-- Audio streams
-- Video streams
-- Screen sharing
-- Real-time data
+#### UDP (Port 65436) - Real-Time Channel
+- ⚡ Video frames (JPEG compressed)
+- ⚡ Audio chunks (raw PCM)
+- ⚡ Screen sharing frames
+- ⚡ Low-latency media streams
 
-### Audio Flow (N-1 Mixing)
+### Audio Flow Diagram (N-1 Mixing)
+
 ```
-Client A ──► Server ──► Mix(B+C) ──► Client A
-Client B ──► Server ──► Mix(A+C) ──► Client B  
-Client C ──► Server ──► Mix(A+B) ──► Client C
+Client A ───► Server ───► Mix(B+C+D) ───► Client A
+Client B ───► Server ───► Mix(A+C+D) ───► Client B
+Client C ───► Server ───► Mix(A+B+D) ───► Client C
+Client D ───► Server ───► Mix(A+B+C) ───► Client D
 
-Each client receives all others except themselves
+Each client receives all audio EXCEPT their own (prevents echo)
+```
+
+### Threading Model
+
+**Server Threads:**
+1. Main thread - Accepts new TCP connections
+2. Per-client TCP handler - One thread per connected client
+3. UDP receiver - Single thread for all incoming media
+4. Audio mixer - Processes and mixes audio streams
+
+**Client Threads:**
+1. Main thread - PyQt5 GUI event loop
+2. TCP receiver - Processes control messages from server
+3. UDP receiver - Handles incoming media packets
+4. Video capture - QTimer-based frame capture (30 FPS)
+5. Audio capture - Continuous recording loop
+6. Screen capture - QTimer-based capture (2 FPS when active)
+
+---
+
+## 🛠️ Tech Stack & Libraries
+
+### Core Technologies
+- **Python 3.8+** - Primary programming language
+- **Socket Programming** - TCP/UDP network communication
+- **Multi-threading** - Concurrent operations
+- **Pickle Protocol** - Data serialization
+
+### Key Libraries
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| **PyQt5** | Latest | GUI framework and user interface |
+| **OpenCV (cv2)** | Latest | Video capture, processing, and encoding |
+| **PyAudio** | Latest | Audio input/output and streaming |
+| **NumPy** | Latest | Numerical operations and audio mixing |
+| **MSS** | Latest | High-performance screen capture |
+| **Pillow (PIL)** | Latest | Image processing and manipulation |
+
+### Development Tools
+- **PyInstaller** - Executable packaging
+- **Git** - Version control
+
+---
+
+## 📦 Installation & Setup
+
+### System Requirements
+
+**Minimum:**
+- OS: Windows 10/11, Linux (Ubuntu 18.04+), macOS 10.14+
+- CPU: Intel Core i3 (2.0 GHz) or equivalent
+- RAM: 4 GB
+- Network: 100 Mbps LAN connection
+- Python: 3.8 or higher
+
+**Recommended:**
+- CPU: Intel Core i5 (2.5 GHz+) or equivalent
+- RAM: 8 GB
+- Network: Gigabit (1000 Mbps) Ethernet
+- Dedicated GPU for video processing
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/gyanchandra2910/Fusion_meet.git
+cd Fusion_meet
+```
+
+### Step 2: Create Virtual Environment
+
+**Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+**macOS / Linux:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+**Or install manually:**
+```bash
+pip install PyQt5 opencv-python pyaudio numpy mss pillow
+```
+
+### Step 4: Install PyAudio (Windows - if needed)
+
+If PyAudio installation fails on Windows:
+```powershell
+pip install pipwin
+pipwin install pyaudio
 ```
 
 ---
 
-## 🔧 Technical Specifications
+## 🚀 Usage Instructions
 
-### Network Packets
+### Starting the Server
 
-**Audio Packet (UDP):**
-```
-[Type:'a'] [Audio Data: 4096 bytes]
-```
+1. **On the server machine**, navigate to the project directory:
 
-**Video Packet (UDP):**
-```
-[Type:'v'] [Username Length] [Username] [JPEG Data]
+```bash
+cd Fusion_meet
 ```
 
-**Chat Message (TCP):**
-```json
-{
-    "type": "chat",
-    "username": "Alice",
-    "message": "Hello!",
-    "timestamp": 1699000000
-}
+2. **Activate the virtual environment:**
+
+```powershell
+.\.venv\Scripts\Activate.ps1  # Windows
+source .venv/bin/activate      # macOS/Linux
 ```
 
-### Configuration
+3. **Run the server:**
 
-**Audio:**
-- Sample Rate: 22050 Hz
-- Channels: Mono (1)
-- Bit Depth: 16-bit
-- Chunk: 2048 samples
+```bash
+python server.py
+```
 
-**Video:**
-- Resolution: 320x240
-- Frame Rate: 15 FPS
-- Compression: JPEG (~50%)
-- Protocol: UDP
+4. **Note the server IP address** displayed in the console (e.g., `192.168.1.100`)
 
-**File Transfer:**
-- Chunk Size: 32 KB
-- Protocol: TCP
-- Max Size: 500 MB
+**Server Console Output:**
+```
+╔══════════════════════════════════════════╗
+║     FusionMeet Conference Server         ║
+╚══════════════════════════════════════════╝
+✓ Server started on 192.168.1.100:65435
+✓ UDP listening on port 65436
+✓ Waiting for clients to connect...
+```
+
+### Starting the Client
+
+1. **On each client machine**, navigate to the project directory:
+
+```bash
+cd Fusion_meet
+```
+
+2. **Activate the virtual environment:**
+
+```powershell
+.\.venv\Scripts\Activate.ps1  # Windows
+source .venv/bin/activate      # macOS/Linux
+```
+
+3. **Run the client:**
+
+```bash
+python client.py
+```
+
+4. **Login Dialog:**
+   - Enter **Server IP Address** (from Step 4 of server setup)
+   - Enter **Your Name** (username)
+   - Click **Connect**
+
+5. **Session Join Dialog:**
+   - **Create new session** or **select existing session**
+   - Click **Join Conference**
+
+### Main Interface Overview
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  FusionMeet - Session: Team Meeting                         │
+├─────────────────────────┬────────────────────────────────────┤
+│                         │  👥 Participants (3)               │
+│   VIDEO GRID (3×3)      │  • Alice (You) 🎥 🎤              │
+│                         │  • Bob 🎥                          │
+│  ┌───────┬───────┬───┐  │  • Charlie 🎥 🎤                   │
+│  │ Alice │  Bob  │   │  ├────────────────────────────────────┤
+│  │ (You) │       │   │  │  📁 Shared Files (2)               │
+│  ├───────┼───────┼───┤  │  📄 Presentation.pdf (2.3 MB)      │
+│  │Charlie│       │   │  │     [Download]                     │
+│  │       │       │   │  │  📊 Report.xlsx (450 KB)           │
+│  ├───────┼───────┼───┤  │     [Download]                     │
+│  │       │       │   │  │  [+ Share New File]                │
+│  └───────┴───────┴───┘  │                                    │
+│                         │                                    │
+├─────────────────────────┴────────────────────────────────────┤
+│  💬 Chat                                                     │
+│  Alice: Welcome to the meeting!                              │
+│  Bob: Thanks! Can everyone hear me?                          │
+│  Charlie: Yes, loud and clear.                               │
+│  [Type your message here...]              [Send]             │
+├──────────────────────────────────────────────────────────────┤
+│  🎛️ Controls                                                 │
+│  [🎥 Video] [🎤 Audio] [📺 Screen] [📁 Files] [🚪 Leave]    │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Control Buttons
+
+| Button | Function | Shortcut |
+|--------|----------|----------|
+| 🎥 **Video** | Toggle camera on/off | - |
+| 🎤 **Audio** | Mute/unmute microphone | - |
+| 📺 **Screen Share** | Start/stop screen sharing | - |
+| 📁 **Files** | Open file sharing dialog | - |
+| 💬 **Chat** | Focus chat input | - |
+| 🚪 **Leave** | Disconnect from session | - |
+
+### File Sharing Workflow
+
+1. **Upload a file:**
+   - Click `📁 Files` or `[+ Share New File]`
+   - Select file from file dialog
+   - Monitor upload progress
+   - File appears in "Shared Files" for all participants
+
+2. **Download a file:**
+   - Locate file in "Shared Files" panel
+   - Click `[Download]` button
+   - Choose save location
+   - Monitor download progress
 
 ---
 
-## 🛠️ Building Executables
+## 📂 Folder Structure
 
-### Build Client
-```powershell
-pyinstaller --name="FusionMeet_Client" \
-    --icon="client_server_icon/client.ico" \
-    --noconsole \
-    --onefile \
-    --add-data="icons;icons" \
-    --add-data="config.py;." \
-    --add-data="utils.py;." \
-    --add-data="audio_module.py;." \
-    --add-data="audio_mixer.py;." \
-    --add-data="video_module.py;." \
-    --add-data="screen_sharing_module.py;." \
-    --add-data="chat_module.py;." \
-    --add-data="file_sharing_module.py;." \
-    --add-data="gui.py;." \
-    --add-data="login_dialog.py;." \
-    --add-data="join_media_dialog.py;." \
-    --add-data="file_dialog.py;." \
-    --hidden-import=PyQt5 \
-    --hidden-import=pyaudio \
-    --hidden-import=cv2 \
-    --hidden-import=numpy \
-    --hidden-import=PIL \
-    --hidden-import=mss \
-    --collect-all=PyQt5 \
-    --collect-all=cv2 \
-    --collect-all=numpy \
-    --collect-all=PIL \
-    --collect-all=mss \
-    --collect-all=pyaudio \
-    client.py
+```
+FusionMeet/
+├── 📄 README.md                    # This file
+├── 📄 .gitignore                   # Git ignore rules
+├── 📄 requirements.txt             # Python dependencies
+├── 📄 build_executables.ps1        # Build script for Windows
+│
+├── 🐍 server.py                    # Main server application
+├── 🐍 client.py                    # Main client application
+├── 🐍 config.py                    # Configuration constants
+├── 🐍 utils.py                     # Network utility functions
+│
+├── 🎨 gui.py                       # Main GUI window
+├── 🎨 login_dialog.py              # Login/connection dialog
+├── 🎨 join_media_dialog.py         # Session join dialog
+├── 🎨 file_dialog.py               # File sharing dialog
+│
+├── 🎥 video_module.py              # Video capture and streaming
+├── 🎤 audio_module.py              # Audio capture and playback
+├── 🎵 audio_mixer.py               # Server-side N-1 audio mixer
+├── 📺 screen_sharing_module.py     # Screen capture and sharing
+├── 💬 chat_module.py               # Chat messaging
+├── 📁 file_sharing_module.py       # File upload/download
+│
+├── 📦 VideoConference_Client.spec  # PyInstaller spec for client
+├── 📦 VideoConference_Server.spec  # PyInstaller spec for server
+│
+├── 📁 icons/                       # UI icons
+│   ├── camera.png
+│   ├── mic_on.png
+│   ├── mic_off.png
+│   ├── video_on.png
+│   ├── video_off.png
+│   ├── screen_share.png
+│   ├── chat.png
+│   ├── file_transfer.png
+│   └── leave.png
+│
+├── 📁 client_server_icon/          # Application icons
+│   ├── client.ico
+│   └── server.ico
+│
+├── 📁 docs/                        # Documentation
+│   └── TECHNICAL.md                # Technical documentation
+│
+├── 📁 build/                       # Build artifacts (generated)
+├── 📁 dist/                        # Executables (generated)
+└── 📁 uploads/                     # Shared files storage (generated)
 ```
 
-### Build Server
+---
+
+## 🔧 Building Standalone Executables
+
+### Using the Build Script (Windows)
+
 ```powershell
-pyinstaller --name="FusionMeet_Server" \
-    --icon="client_server_icon/server.ico" \
-    --console \
-    --onefile \
-    --add-data="config.py;." \
-    --add-data="utils.py;." \
-    --add-data="audio_mixer.py;." \
-    --hidden-import=numpy \
-    --collect-all=numpy \
-    server.py
+.\build_executables.ps1
 ```
 
-**Output:** `dist/FusionMeet_Client.exe` and `dist/FusionMeet_Server.exe`
+This will create:
+- `dist/FusionMeet_Client.exe`
+- `dist/FusionMeet_Server.exe`
+
+### Manual Build (Advanced)
+
+**Build Client:**
+```bash
+pyinstaller VideoConference_Client.spec
+```
+
+**Build Server:**
+```bash
+pyinstaller VideoConference_Server.spec
+```
+
+---
+
+## 🔒 Security Considerations
+
+⚠️ **Important Security Notes:**
+
+- **LAN-Only**: FusionMeet is designed for trusted local networks only
+- **No Encryption**: Data is transmitted without encryption by default
+- **No Authentication**: Minimal authentication (username only)
+- **Trusted Network**: Use only on isolated, trusted LANs
+- **Firewall**: Ensure proper firewall rules on the server machine
+
+**DO NOT expose the server to the public internet without implementing:**
+- TLS/SSL encryption for TCP
+- DTLS for UDP (or VPN)
+- Strong authentication (passwords, tokens)
+- Authorization and access control
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Audio Issues
+### Common Issues
 
-**No audio from others:**
-- Check microphone permissions
-- Toggle mic off/on
-- Verify audio device in settings
-- Use headphones to prevent echo
+**1. "Cannot connect to server"**
+- ✅ Verify server IP address
+- ✅ Check firewall settings (allow ports 65435, 65436)
+- ✅ Ensure both machines are on the same LAN
+- ✅ Ping server: `ping <server_ip>`
 
-**Echo/feedback:**
-- Use headphones instead of speakers
-- N-1 mixing should prevent this
-- Check for duplicate connections
+**2. "No video/black screen"**
+- ✅ Check camera permissions
+- ✅ Ensure camera is not used by another app
+- ✅ Try toggling video off and on
+- ✅ Restart client application
 
-### Video Issues
+**3. "No audio from other participants"**
+- ✅ Check microphone permissions
+- ✅ Toggle microphone mute/unmute
+- ✅ Verify correct audio device selected
+- ✅ Use headphones to prevent echo
 
-**Black screen:**
-- Check camera permissions
-- Ensure camera not used by other app
-- Toggle camera off/on
-- Restart client
+**4. "Choppy video/audio"**
+- ✅ Reduce video resolution in `config.py`
+- ✅ Use wired Ethernet instead of WiFi
+- ✅ Check network bandwidth
+- ✅ Close bandwidth-intensive applications
 
-**Choppy video:**
-- Reduce resolution in `config.py`
-- Check network bandwidth
-- Use wired connection
+**5. "Screen sharing not working"**
+- ✅ Check screen recording permissions (macOS)
+- ✅ Only one presenter allowed at a time
+- ✅ Restart screen sharing if black screen appears
 
-### Network Issues
+### Performance Optimization
 
-**Cannot connect:**
-- Verify server IP address
-- Check firewall settings
-- Ensure same LAN network
-- Ping server: `ping <server_ip>`
+**Server-Side:**
+- Use a dedicated machine for the server
+- Ensure sufficient CPU for audio mixing (multi-core recommended)
+- Monitor network bandwidth usage
 
-**Connection drops:**
-- Check network stability
-- Use ethernet instead of WiFi
-- Verify no network congestion
-
-### Screen Share Issues
-
-**"Another user presenting":**
-- Wait for current presenter
-- Only one presenter at a time
-
-**Black screen share:**
-- Check screen capture permissions
-- Restart sharing
-- Restart client
+**Client-Side:**
+- Reduce video quality if experiencing lag
+- Use wired connection for better stability
+- Close unnecessary applications
 
 ---
 
-## 🔐 Security
+## 📊 Performance Metrics
 
-**Network Security:**
-- ⚠️ LAN-only, do NOT expose to internet
-- No encryption by default
-- Trust-based system
-- Use on trusted networks only
+**Bandwidth Requirements (per client):**
+- Audio: ~86 Kbps (22050 Hz × 16-bit × 1 channel)
+- Video: ~400-800 Kbps (320×240, JPEG compressed)
+- Screen Share: ~1-2 Mbps (when active)
+- **Total**: ~2-3 Mbps per active client
 
-**Firewall Setup (Windows):**
-```powershell
-New-NetFirewallRule -DisplayName "FusionMeet TCP" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
-New-NetFirewallRule -DisplayName "FusionMeet UDP" -Direction Inbound -Protocol UDP -LocalPort 5001 -Action Allow
-```
+**Example: 10 Clients**
+- Server bandwidth: ~30 Mbps
+- Recommended LAN: Gigabit (1000 Mbps)
 
 ---
 
-## 📊 Performance
+## 🚧 Future Improvements
 
-**Bandwidth (per client):**
-- Audio: ~86 Kbps
-- Video: ~400-800 Kbps
-- Screen Share: ~1-2 Mbps
-- **Total:** ~2-3 Mbps per client
+### Planned Features
+- [ ] **End-to-end encryption** for all communications
+- [ ] **User authentication** with password protection
+- [ ] **Session recording** (audio/video)
+- [ ] **Virtual backgrounds** for video
+- [ ] **Noise suppression** for audio
+- [ ] **Breakout rooms** for smaller discussions
+- [ ] **Whiteboard** for collaborative drawing
+- [ ] **Polls and reactions** for engagement
+- [ ] **Admin controls** for session management
+- [ ] **Mobile client** (Android/iOS)
 
-**For 10 clients:** ~30 Mbps server bandwidth required
-
-**Recommended:** Gigabit LAN (1000 Mbps)
+### Technical Enhancements
+- [ ] **Adaptive bitrate** for varying network conditions
+- [ ] **WebRTC integration** for peer-to-peer mode
+- [ ] **Database backend** for persistent sessions
+- [ ] **REST API** for external integrations
+- [ ] **Docker containers** for easy deployment
+- [ ] **Load balancing** for multiple servers
+- [ ] **Metrics dashboard** for monitoring
 
 ---
 
-## 📝 Project Structure
+## 👥 Contributors
 
-```
-FusionMeet/
-├── server.py                  # Main server
-├── client.py                  # Main client
-├── config.py                  # Configuration
-├── utils.py                   # Utilities
-├── audio_module.py            # Audio handler
-├── audio_mixer.py             # N-1 mixing
-├── video_module.py            # Video handler
-├── screen_sharing_module.py   # Screen share
-├── chat_module.py             # Chat handler
-├── file_sharing_module.py     # File transfer
-├── gui.py                     # Main window
-├── login_dialog.py            # Login UI
-├── join_media_dialog.py       # Join UI
-├── file_dialog.py             # File UI
-├── icons/                     # GUI icons
-└── client_server_icon/        # App icons
-```
+<div align="center">
+
+### Lead Developer
+**Gyan Chandra**  
+[GitHub](https://github.com/gyanchandra2910)
+
+</div>
+
+### How to Contribute
+
+We welcome contributions! Here's how you can help:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+**Contribution Guidelines:**
+- Follow PEP 8 style guide for Python code
+- Add comments and docstrings to your code
+- Test your changes thoroughly
+- Update documentation as needed
 
 ---
 
 ## 📄 License
 
-MIT License - See LICENSE file for details
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+```
+MIT License
+
+Copyright (c) 2025 Gyan Chandra
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+```
 
 ---
 
 ## 🙏 Acknowledgments
 
-- PyQt5 - GUI framework
-- OpenCV - Video processing
-- PyAudio - Audio I/O
-- NumPy - Numerical ops
-- MSS - Screen capture
-- Pillow - Image processing
+Special thanks to the open-source community and the following projects:
+
+- **PyQt5** - Riverbank Computing for the excellent GUI framework
+- **OpenCV** - Intel for computer vision capabilities
+- **PyAudio** - Hubert Pham for audio I/O
+- **NumPy** - NumPy developers for numerical operations
+- **MSS** - BoboTiG for screen capture functionality
+- **Python Software Foundation** - For the amazing Python language
+
+---
+
+## 📞 Support & Contact
+
+**Issues & Bug Reports:**  
+[GitHub Issues](https://github.com/gyanchandra2910/Fusion_meet/issues)
+
+**Documentation:**  
+[Technical Documentation](docs/TECHNICAL.md)
+
+**Questions?**  
+Feel free to open a discussion or contact the maintainer.
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for LAN Collaboration**
+### 🌟 Star this repository if you find it useful!
 
-[⬆ Back to Top](#-fusionmeet---lan-based-video-conferencing-system)
+**Made with ❤️ for seamless LAN collaboration**
+
+[⬆ Back to Top](#-fusionmeet---lan-based-all-in-one-collaboration-suite)
 
 </div>
