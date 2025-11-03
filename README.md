@@ -173,26 +173,52 @@ flowchart TB
     style SESSION fill:#e0f2f1,stroke:#00695c,stroke-width:2px
 ```
 
-### Network Topology (Simplified)
+### Detailed Architecture Diagram (ASCII)
 
 ```
-                    ┌─────────────────┐
-                    │  SERVER         │
-                    │  (Host Machine) │
-                    │                 │
-                    │  TCP: 65435     │
-                    │  UDP: 65436     │
-                    └────────┬────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              │              │              │
-         ┌────▼────┐    ┌────▼────┐   ┌────▼────┐
-         │ Client1 │    │ Client2 │   │ Client3 │
-         │ (Alice) │    │  (Bob)  │   │(Charlie)│
-         └─────────┘    └─────────┘   └─────────┘
-              │              │              │
-              └──────────────┴──────────────┘
-                    Same LAN Network
+┌─────────────────────────────────────────────────────────────────────┐
+│                         LAN NETWORK (192.168.x.x)                   │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+        ┌───────────────────────────┼───────────────────────────┐
+        │                           │                           │
+┌───────▼────────┐          ┌───────▼────────┐          ┌──────▼─────────┐
+│   CLIENT 1     │          │   CLIENT 2     │          │   CLIENT 3     │
+│   (Alice)      │          │    (Bob)       │          │  (Charlie)     │
+├────────────────┤          ├────────────────┤          ├────────────────┤
+│ 📹 Webcam      │          │ 📹 Webcam      │          │ 📹 Webcam      │
+│ 🎤 Microphone  │          │ 🎤 Microphone  │          │ 🎤 Microphone  │
+│ 📺 Screen      │          │ 📺 Screen      │          │ 📺 Screen      │
+│ 💬 Chat        │          │ 💬 Chat        │          │ 💬 Chat        │
+│ 📁 Files       │          │ 📁 Files       │          │ 📁 Files       │
+└────────┬───────┘          └────────┬───────┘          └────────┬───────┘
+         │                           │                           │
+         │ UDP:65436 (Video/Audio)   │                           │
+         │ TCP:65435 (Chat/Files)    │                           │
+         │                           │                           │
+         └───────────────────────────┼───────────────────────────┘
+                                     │
+                          ┌──────────▼──────────┐
+                          │   CENTRAL SERVER    │
+                          │  (192.168.1.100)    │
+                          ├─────────────────────┤
+                          │  🔌 TCP: 65435      │
+                          │  📡 UDP: 65436      │
+                          ├─────────────────────┤
+                          │  Components:        │
+                          │  • Session Manager  │
+                          │  • N-1 Audio Mixer  │
+                          │  • Video Router     │
+                          │  • Chat Broadcaster │
+                          │  • File Manager     │
+                          │  • Screen Router    │
+                          └─────────────────────┘
+                                     │
+         ┌───────────────────────────┼───────────────────────────┐
+         │                           │                           │
+         ▼                           ▼                           ▼
+   Broadcast to                Broadcast to                Broadcast to
+   All Clients                All Clients                 All Clients
 ```
 
 ### Client-Server Model
@@ -215,30 +241,250 @@ flowchart TB
 
 ### Communication Protocols
 
-#### TCP (Port 65435) - Reliable Channel
-- ✅ User authentication and login
-- ✅ Session management
-- ✅ Chat messages
-- ✅ File metadata exchange
-- ✅ File content transfer
-- ✅ Control commands (video/audio status)
-- ✅ Participant list updates
+#### 🔴 TCP (Port 65435) - Reliable Channel
+Used for control and data that must be delivered reliably:
 
-#### UDP (Port 65436) - Real-Time Channel
-- ⚡ Video frames (JPEG compressed)
-- ⚡ Audio chunks (raw PCM)
-- ⚡ Screen sharing frames
-- ⚡ Low-latency media streams
+| Data Type | Direction | Purpose |
+|-----------|-----------|---------|
+| **Authentication** | Client → Server | User login and session join |
+| **Session Management** | Bidirectional | Session creation, participant tracking |
+| **Chat Messages** | Client → Server → All Clients | Text messaging |
+| **File Metadata** | Client → Server → All Clients | File info broadcast |
+| **File Content** | Client ↔ Server ↔ Client | Chunked file transfer (32KB chunks) |
+| **Control Commands** | Bidirectional | Video/audio status updates |
+| **Screen Sharing** | Client → Server → All Clients | Screen frames (reliability over speed) |
+| **Participant List** | Server → All Clients | Active users updates |
 
-### Audio Flow Diagram (N-1 Mixing)
+#### 🟢 UDP (Port 65436) - Real-Time Channel
+Used for media streaming where speed is critical:
 
+| Data Type | Direction | Characteristics |
+|-----------|-----------|-----------------|
+| **Video Frames** | Client → Server → All Clients | JPEG compressed (50%), 320×240 |
+| **Audio Chunks** | Client → Server → Mixer → All Clients | 22050 Hz, 16-bit, mono, 2048 samples |
+| **Low-latency Media** | Bidirectional | Best-effort delivery, tolerates packet loss |
+
+**Protocol Selection Rationale:**
+- **TCP for Chat/Files/Screen**: Ensures no data loss, maintains message order
+- **UDP for Audio/Video**: Minimizes latency, occasional frame loss acceptable
+- **Hybrid Approach**: Balances reliability and real-time performance
+
+### Data Flow Diagrams
+
+#### Video Streaming Flow (UDP)
 ```
-Client A ───► Server ───► Mix(B+C+D) ───► Client A
-Client B ───► Server ───► Mix(A+C+D) ───► Client B
-Client C ───► Server ───► Mix(A+B+D) ───► Client C
-Client D ───► Server ───► Mix(A+B+C) ───► Client D
+┌─────────┐                                              ┌─────────┐
+│ Client1 │                                              │ Client2 │
+│  Alice  │                                              │   Bob   │
+└────┬────┘                                              └────┬────┘
+     │                                                        │
+     │ 1. Capture frame (OpenCV)                             │
+     │ 2. Resize to 320×240                                  │
+     │ 3. JPEG compress (~50%)                               │
+     │ 4. Pickle with metadata                               │
+     │                                                        │
+     │ {'type':'video',                                      │
+     │  'username':'Alice',                                  │
+     │  'frame':<JPEG bytes>,                                │
+     │  'timestamp':xxx}                                     │
+     │                                                        │
+     ▼                  UDP:65436                            │
+┌────────────────────────────────┐                          │
+│         SERVER                 │                          │
+│  Video Router                  │                          │
+│                                │                          │
+│  • Receives video packet       │                          │
+│  • Identifies sender           │                          │
+│  • Broadcasts to all OTHER     │                          │
+│    clients (not sender)        │                          │
+└────────────────────────────────┘                          │
+                 │                                          │
+                 │ Broadcast UDP:65436                      │
+                 └──────────────────────────────────────────▼
+                                                       ┌─────────┐
+                                                       │ Client2 │
+                                                       │   Bob   │
+                                                       └─────────┘
+                                                            │
+                                                            │ 1. Receive packet
+                                                            │ 2. Unpickle data
+                                                            │ 3. cv2.imdecode JPEG
+                                                            │ 4. Convert to QPixmap
+                                                            │ 5. Display in grid
+                                                            ▼
+```
 
-Each client receives all audio EXCEPT their own (prevents echo)
+#### Audio Streaming Flow with N-1 Mixing (UDP)
+```
+Client A          Client B          Client C
+   │                 │                 │
+   │ Audio: A        │ Audio: B        │ Audio: C
+   │ (PCM 2048)      │ (PCM 2048)      │ (PCM 2048)
+   │                 │                 │
+   ▼ UDP:65436       ▼ UDP:65436       ▼ UDP:65436
+   └─────────────────┼─────────────────┘
+                     │
+              ┌──────▼──────┐
+              │   SERVER    │
+              │ Audio Mixer │
+              └──────┬──────┘
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+        ▼            ▼            ▼
+   Mix(B+C)      Mix(A+C)     Mix(A+B)
+        │            │            │
+        │ UDP:65436  │ UDP:65436  │ UDP:65436
+        ▼            ▼            ▼
+   Client A      Client B      Client C
+        │            │            │
+        ▼            ▼            ▼
+    Play(B+C)    Play(A+C)    Play(A+B)
+
+Each client hears everyone EXCEPT themselves (prevents echo)
+```
+
+#### Chat Message Flow (TCP)
+```
+┌─────────┐
+│ Client1 │
+│  Alice  │
+└────┬────┘
+     │
+     │ 1. User types: "Hello everyone!"
+     │ 2. Click Send button
+     │
+     │ TCP:65435
+     │ Pickle({
+     │   'type': 'chat',
+     │   'username': 'Alice',
+     │   'message': 'Hello everyone!',
+     │   'timestamp': 1730678400.0
+     │ })
+     │
+     ▼
+┌────────────────────────┐
+│       SERVER           │
+│   Chat Broadcaster     │
+│                        │
+│ • Receives message     │
+│ • Logs to session      │
+│ • Broadcasts to ALL    │
+│   clients in session   │
+└────┬──────────┬────────┘
+     │          │
+     │ TCP:65435│ TCP:65435
+     ▼          ▼
+┌─────────┐  ┌─────────┐
+│ Client2 │  │ Client3 │
+│   Bob   │  │ Charlie │
+└─────────┘  └─────────┘
+     │            │
+     │ Display:   │ Display:
+     │ "Alice:    │ "Alice:
+     │  Hello     │  Hello
+     │  everyone!"│  everyone!"
+     ▼            ▼
+```
+
+#### File Sharing Flow (TCP)
+```
+UPLOAD FLOW:
+┌─────────┐
+│ Client1 │ 1. Select file "report.pdf" (2.5 MB)
+│  Alice  │ 2. Click "Share File"
+└────┬────┘
+     │ TCP:65435
+     │ Send metadata:
+     │ {'type':'file_metadata',
+     │  'filename':'report.pdf',
+     │  'size':2621440,
+     │  'session':'Meeting1'}
+     ▼
+┌────────────────────────┐
+│       SERVER           │
+│   File Manager         │ 3. Receive metadata
+│                        │ 4. Broadcast to all clients
+│ uploads/Meeting1/      │ 5. Prepare to receive file
+│   report.pdf           │
+└────┬───────────────────┘
+     │ 6. Open TCP connection for file transfer
+     ▼
+┌─────────┐
+│ Client1 │ 7. Send file in 32KB chunks
+│  Alice  │ 8. Show upload progress: 45% (1.12 MB / 2.5 MB)
+└─────────┘ 9. Upload complete
+     │
+     │ 10. Server saves file
+     ▼
+
+DOWNLOAD FLOW:
+┌─────────┐
+│ Client2 │ 1. Sees "report.pdf" in Shared Files panel
+│   Bob   │ 2. Clicks [Download]
+└────┬────┘
+     │ TCP:65435
+     │ Request:
+     │ {'type':'file_request',
+     │  'filename':'report.pdf',
+     │  'session':'Meeting1'}
+     ▼
+┌────────────────────────┐
+│       SERVER           │ 3. Locate file
+│   File Manager         │ 4. Open file for reading
+│                        │ 5. Send in 32KB chunks
+└────┬───────────────────┘
+     │ TCP:65435
+     │ Stream file chunks
+     ▼
+┌─────────┐
+│ Client2 │ 6. Receive chunks
+│   Bob   │ 7. Show download progress: 78% (1.95 MB / 2.5 MB)
+└─────────┘ 8. Save to local disk
+     │ 9. Download complete ✓
+     ▼
+```
+
+#### Screen Sharing Flow (TCP)
+```
+┌─────────┐
+│ Client1 │ 1. Click "Start Screen Share"
+│  Alice  │ 2. Request presenter role
+└────┬────┘
+     │ TCP:65435
+     │ {'type':'screen_share_request',
+     │  'username':'Alice'}
+     ▼
+┌────────────────────────┐
+│       SERVER           │ 3. Check if presenter exists
+│  Session Manager       │ 4. If none, grant permission
+│                        │ 5. Mark Alice as presenter
+│  presenter: "Alice"    │ 6. Send confirmation
+└────┬───────────────────┘
+     │ TCP:65435
+     │ {'type':'screen_share_granted'}
+     ▼
+┌─────────┐
+│ Client1 │ 7. Start MSS screen capture
+│  Alice  │ 8. Capture at 2 FPS
+└────┬────┘ 9. Resize and JPEG compress (70%)
+     │ 10. Send frames via TCP
+     │
+     │ TCP:65435 (every 500ms)
+     │ {'type':'screen_frame',
+     │  'username':'Alice',
+     │  'frame':<JPEG bytes>}
+     ▼
+┌────────────────────────┐
+│       SERVER           │ 11. Receive frame
+│  Screen Router         │ 12. Broadcast to all OTHER clients
+└────┬──────────┬────────┘
+     │ TCP:65435│ TCP:65435
+     ▼          ▼
+┌─────────┐  ┌─────────┐
+│ Client2 │  │ Client3 │ 13. Decode JPEG
+│   Bob   │  │ Charlie │ 14. Display in screen panel
+└─────────┘  └─────────┘ 15. Show "Alice is presenting"
 ```
 
 ### Threading Model
