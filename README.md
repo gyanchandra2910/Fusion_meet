@@ -19,14 +19,6 @@
 
 **FusionMeet** is a comprehensive LAN-based collaboration suite that brings enterprise-grade communication tools to your local network without requiring internet connectivity. Built entirely in Python using socket programming, it provides real-time video conferencing, crystal-clear audio, screen sharing, instant messaging, and seamless file sharing.
 
-### 🎯 Purpose
-
-Perfect for:
-- 🏢 **Corporate environments** with restricted internet access
-- 🏫 **Educational institutions** conducting local workshops
-- 🏥 **Healthcare facilities** requiring private communication
-- 🏭 **Industrial setups** with isolated networks
-- 🔒 **Security-conscious organizations** prioritizing data privacy
 
 ### ✨ Why FusionMeet?
 
@@ -614,15 +606,7 @@ python server.py
 
 4. **Note the server IP address** displayed in the console (e.g., `192.168.1.100`)
 
-**Server Console Output:**
-```
-╔══════════════════════════════════════════╗
-║     FusionMeet Conference Server         ║
-╚══════════════════════════════════════════╝
-✓ Server started on 192.168.1.100:65435
-✓ UDP listening on port 65436
-✓ Waiting for clients to connect...
-```
+
 
 ### Starting the Client
 
@@ -650,9 +634,6 @@ python client.py
    - Enter **Your Name** (username)
    - Click **Connect**
 
-5. **Session Join Dialog:**
-   - **Create new session** or **select existing session**
-   - Click **Join Conference**
 
 ### Main Interface Overview
 
@@ -685,16 +666,6 @@ python client.py
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### Control Buttons
-
-| Button | Function | Shortcut |
-|--------|----------|----------|
-| 🎥 **Video** | Toggle camera on/off | - |
-| 🎤 **Audio** | Mute/unmute microphone | - |
-| 📺 **Screen Share** | Start/stop screen sharing | - |
-| 📁 **Files** | Open file sharing dialog | - |
-| 💬 **Chat** | Focus chat input | - |
-| 🚪 **Leave** | Disconnect from session | - |
 
 ### File Sharing Workflow
 
@@ -790,118 +761,15 @@ pyinstaller VideoConference_Client.spec
 pyinstaller VideoConference_Server.spec
 ```
 
----
 
-## 🔒 Security Considerations
-
-⚠️ **Important Security Notes:**
-
-- **LAN-Only**: FusionMeet is designed for trusted local networks only
-- **No Encryption**: Data is transmitted without encryption by default
-- **No Authentication**: Minimal authentication (username only)
-- **Trusted Network**: Use only on isolated, trusted LANs
-- **Firewall**: Ensure proper firewall rules on the server machine
-
-**DO NOT expose the server to the public internet without implementing:**
-- TLS/SSL encryption for TCP
-- DTLS for UDP (or VPN)
-- Strong authentication (passwords, tokens)
-- Authorization and access control
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. "Cannot connect to server"**
-- ✅ Verify server IP address
-- ✅ Check firewall settings (allow ports 65435, 65436)
-- ✅ Ensure both machines are on the same LAN
-- ✅ Ping server: `ping <server_ip>`
-
-**2. "No video/black screen"**
-- ✅ Check camera permissions
-- ✅ Ensure camera is not used by another app
-- ✅ Try toggling video off and on
-- ✅ Restart client application
-
-**3. "No audio from other participants"**
-- ✅ Check microphone permissions
-- ✅ Toggle microphone mute/unmute
-- ✅ Verify correct audio device selected
-- ✅ Use headphones to prevent echo
-
-**4. "Choppy video/audio"**
-- ✅ Reduce video resolution in `config.py`
-- ✅ Use wired Ethernet instead of WiFi
-- ✅ Check network bandwidth
-- ✅ Close bandwidth-intensive applications
-
-**5. "Screen sharing not working"**
-- ✅ Check screen recording permissions (macOS)
-- ✅ Only one presenter allowed at a time
-- ✅ Restart screen sharing if black screen appears
-
-### Performance Optimization
-
-**Server-Side:**
-- Use a dedicated machine for the server
-- Ensure sufficient CPU for audio mixing (multi-core recommended)
-- Monitor network bandwidth usage
-
-**Client-Side:**
-- Reduce video quality if experiencing lag
-- Use wired connection for better stability
-- Close unnecessary applications
-
----
-
-## 📊 Performance Metrics
-
-**Bandwidth Requirements (per client):**
-- Audio: ~86 Kbps (22050 Hz × 16-bit × 1 channel)
-- Video: ~400-800 Kbps (320×240, JPEG compressed)
-- Screen Share: ~1-2 Mbps (when active)
-- **Total**: ~2-3 Mbps per active client
-
-**Example: 10 Clients**
-- Server bandwidth: ~30 Mbps
-- Recommended LAN: Gigabit (1000 Mbps)
-
----
-
-## 🚧 Future Improvements
-
-### Planned Features
-- [ ] **End-to-end encryption** for all communications
-- [ ] **User authentication** with password protection
-- [ ] **Session recording** (audio/video)
-- [ ] **Virtual backgrounds** for video
-- [ ] **Noise suppression** for audio
-- [ ] **Breakout rooms** for smaller discussions
-- [ ] **Whiteboard** for collaborative drawing
-- [ ] **Polls and reactions** for engagement
-- [ ] **Admin controls** for session management
-- [ ] **Mobile client** (Android/iOS)
-
-### Technical Enhancements
-- [ ] **Adaptive bitrate** for varying network conditions
-- [ ] **WebRTC integration** for peer-to-peer mode
-- [ ] **Database backend** for persistent sessions
-- [ ] **REST API** for external integrations
-- [ ] **Docker containers** for easy deployment
-- [ ] **Load balancing** for multiple servers
-- [ ] **Metrics dashboard** for monitoring
-
----
 
 ## 👥 Contributors
 
 <div align="center">
 
-### Lead Developer
+### Developer Team
 **Gyan Chandra**  
+**Rohit Kumar**
 [GitHub](https://github.com/gyanchandra2910)
 
 </div>
@@ -922,33 +790,7 @@ We welcome contributions! Here's how you can help:
 - Test your changes thoroughly
 - Update documentation as needed
 
----
 
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2025 Gyan Chandra
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-```
-
----
 
 ## 🙏 Acknowledgments
 
@@ -961,28 +803,5 @@ Special thanks to the open-source community and the following projects:
 - **MSS** - BoboTiG for screen capture functionality
 - **Python Software Foundation** - For the amazing Python language
 
----
 
-## 📞 Support & Contact
 
-**Issues & Bug Reports:**  
-[GitHub Issues](https://github.com/gyanchandra2910/Fusion_meet/issues)
-
-**Documentation:**  
-[Technical Documentation](docs/TECHNICAL.md)  
-[Architecture Diagrams](docs/ARCHITECTURE.md)
-
-**Questions?**  
-Feel free to open a discussion or contact the maintainer.
-
----
-
-<div align="center">
-
-### 🌟 Star this repository if you find it useful!
-
-**Made with ❤️ for seamless LAN collaboration**
-
-[⬆ Back to Top](#-fusionmeet---lan-based-all-in-one-collaboration-suite)
-
-</div>
