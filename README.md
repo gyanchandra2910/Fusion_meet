@@ -790,16 +790,6 @@ We welcome contributions! Here's how you can help:
 
 
 
-## 🙏 Acknowledgments
-
-Special thanks to the open-source community and the following projects:
-
-- **PyQt5** - Riverbank Computing for the excellent GUI framework
-- **OpenCV** - Intel for computer vision capabilities
-- **PyAudio** - Hubert Pham for audio I/O
-- **NumPy** - NumPy developers for numerical operations
-- **MSS** - BoboTiG for screen capture functionality
-- **Python Software Foundation** - For the amazing Python language
 
 
 
