@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Project specific
+*.log
+*.db
+*.sqlite
+file_paths.txt
+
+# Build artifacts
+build/
+dist/
+*.exe
+
+# Temporary files
+*.tmp
+*.bak
+*.old
