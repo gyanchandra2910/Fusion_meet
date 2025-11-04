@@ -651,27 +651,115 @@ FusionMeet/
 
 ## 🔧 Building Standalone Executables
 
-### Using the Build Script (Windows)
+### Prerequisites
 
+```bash
+# Activate virtual environment first
+.\.venv\Scripts\Activate.ps1  # Windows PowerShell
+# OR
+source .venv/bin/activate      # macOS/Linux
+
+# Install PyInstaller if not already installed
+pip install pyinstaller
+```
+
+### Option 1: Using the Build Script (Recommended)
+
+**Windows:**
 ```powershell
 .\build_executables.ps1
 ```
 
-This will create:
-- `dist/FusionMeet_Client.exe`
-- `dist/FusionMeet_Server.exe`
+**Linux/macOS:**
+```bash
+chmod +x build_executables.sh
+./build_executables.sh
+```
 
-### Manual Build (Advanced)
+This will automatically create both executables in the `dist/` folder.
+
+### Option 2: Using PyInstaller Spec Files
 
 **Build Client:**
 ```bash
-pyinstaller VideoConference_Client.spec
+pyinstaller --clean VideoConference_Client.spec
 ```
 
 **Build Server:**
 ```bash
-pyinstaller VideoConference_Server.spec
+pyinstaller --clean VideoConference_Server.spec
 ```
+
+### Option 3: Manual PyInstaller Commands
+
+**Build Client Application:**
+```bash
+pyinstaller --name="FusionMeet_Client" \
+    --icon="client_server_icon/client.ico" \
+    --noconsole \
+    --onefile \
+    --add-data="icons;icons" \
+    --add-data="config.py;." \
+    --add-data="utils.py;." \
+    --add-data="audio_module.py;." \
+    --add-data="audio_mixer.py;." \
+    --add-data="video_module.py;." \
+    --add-data="screen_sharing_module.py;." \
+    --add-data="chat_module.py;." \
+    --add-data="file_sharing_module.py;." \
+    --add-data="gui.py;." \
+    --add-data="login_dialog.py;." \
+    --add-data="join_media_dialog.py;." \
+    --add-data="file_dialog.py;." \
+    --hidden-import=PyQt5 \
+    --hidden-import=PyQt5.QtCore \
+    --hidden-import=PyQt5.QtGui \
+    --hidden-import=PyQt5.QtWidgets \
+    --hidden-import=pyaudio \
+    --hidden-import=cv2 \
+    --hidden-import=numpy \
+    --hidden-import=PIL \
+    --hidden-import=mss \
+    --collect-all=PyQt5 \
+    --collect-all=cv2 \
+    --collect-all=numpy \
+    --collect-all=PIL \
+    --collect-all=mss \
+    --collect-all=pyaudio \
+    client.py
+```
+
+**Build Server Application:**
+```bash
+pyinstaller --name="FusionMeet_Server" \
+    --icon="client_server_icon/server.ico" \
+    --console \
+    --onefile \
+    --add-data="config.py;." \
+    --add-data="utils.py;." \
+    --add-data="audio_mixer.py;." \
+    --hidden-import=numpy \
+    --collect-all=numpy \
+    server.py
+```
+
+### Output Location
+
+After successful build, you'll find:
+- `dist/FusionMeet_Client.exe` (Windows) or `dist/FusionMeet_Client` (Linux/macOS)
+- `dist/FusionMeet_Server.exe` (Windows) or `dist/FusionMeet_Server` (Linux/macOS)
+
+### Build Information
+
+| Executable | Size | Build Time | Components |
+|------------|------|------------|------------|
+| **Client** | ~110 MB | 5-10 min (first build) | PyQt5, OpenCV, PyAudio, MSS, Pillow |
+| **Server** | ~25 MB | 2-3 min (first build) | NumPy, Audio Mixer |
+
+**Notes:**
+- Subsequent builds are faster (~2-3 minutes) due to cached files
+- Use `--clean` flag to force complete rebuild
+- Test executables in a clean environment before distribution
 
 
 
